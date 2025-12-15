@@ -1,0 +1,189 @@
+😂 Theek hai bhai — **ab ekdum fresh start**,
+**sirf 2 machines**, **zero confusion**, **copy-paste practical**.
+Tu bas steps follow kar, kahin jump nahi karna.
+
+---
+
+# 🎯 GOAL (simple)
+
+👉 **Debian-1 = Squid Reverse Proxy**
+👉 **Debian-2 = Backend Web Server**
+
+Client bhi **Squid wali machine se hi test karega** (curl se).
+
+---
+
+## 🖥 MACHINE-1: **Backend Debian (Web Server)**
+
+### Step 1: Apache install
+
+```bash
+sudo apt update
+sudo apt install apache2 -y
+```
+
+### Step 2: Test page banao
+
+```bash
+echo "HELLO FROM BACKEND SERVER" | sudo tee /var/www/html/index.html
+```
+
+### Step 3: Apache start
+
+```bash
+sudo systemctl start apache2
+sudo systemctl enable apache2
+```
+
+### Step 4: Check backend (IMPORTANT)
+
+```bash
+curl http://localhost
+```
+
+### ✅ Output:
+
+```
+HELLO FROM BACKEND SERVER
+```
+
+👉 **Backend IP note kar lo**
+(check using `ip a`)
+Example maan le: **192.168.1.20**
+
+---
+
+## 🖥 MACHINE-2: **Proxy Debian (Squid Reverse Proxy)**
+
+### Step 1: Squid install
+
+```bash
+sudo apt update
+sudo apt install squid -y
+```
+
+---
+
+### Step 2: Squid config edit
+
+```bash
+sudo nano /etc/squid/squid.conf
+```
+
+### 🔥 File ke END me ye paste karo
+
+(backend IP change mat bhoolna)
+
+```conf
+http_port 80 accel defaultsite=backend.local
+
+cache_peer 192.168.1.20 parent 80 0 no-query originserver name=backend
+
+acl sites dstdomain backend.local
+http_access allow sites
+
+cache_peer_access backend allow sites
+```
+
+### ❌ Is line ko comment karo
+
+Search karo:
+
+```conf
+http_access deny all
+```
+
+Usko bana do:
+
+```conf
+# http_access deny all
+```
+
+Save → Exit
+
+---
+
+### Step 3: Squid restart
+
+```bash
+sudo systemctl restart squid
+sudo systemctl status squid
+```
+
+---
+
+### Step 4: Hosts file set karo (same Squid machine)
+
+```bash
+sudo nano /etc/hosts
+```
+
+Add:
+
+```text
+127.0.0.1 backend.local
+```
+
+Save → Exit
+
+---
+
+## 🧪 FINAL TEST (IMPORTANT)
+
+👉 **Squid machine pe hi**:
+
+```bash
+curl http://backend.local
+```
+
+### 🎉 Expected output:
+
+```
+HELLO FROM BACKEND SERVER
+```
+
+---
+
+# ✅ SUCCESS FLOW
+
+```
+curl
+ ↓
+Squid (Reverse Proxy)
+ ↓
+Backend Apache
+```
+
+---
+
+# ❌ Agar kaam na kare to turant ye check karo
+
+### 1️⃣ Backend reachable?
+
+(Squid machine se)
+
+```bash
+curl http://192.168.1.20
+```
+
+### 2️⃣ Squid 80 pe listen kar raha?
+
+```bash
+sudo ss -tulnp | grep :80
+```
+
+### 3️⃣ Apache running?
+
+(Backend machine)
+
+```bash
+sudo systemctl status apache2
+```
+
+---
+
+# 🧠 EXAM ME LIKHNE KE LIYE (2 line)
+
+> Squid reverse proxy forwards client requests to backend server using `http_port accel` and `cache_peer`.
+
+---
