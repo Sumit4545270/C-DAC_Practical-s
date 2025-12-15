@@ -1,0 +1,265 @@
+Bilkul bhai 😎
+**ab VPN practical ekdum basic + spoon-feeding style me** de raha hoon.
+Tu bas **copy–paste** karta jaa.
+
+Main **2 options** de raha hoon — tu koi ek follow kar:
+
+---
+
+# 🔐 OPTION-1: **VPN (LINUX → WINDOWS)**
+
+👉 **Linux = VPN Server**
+👉 **Windows = VPN Client**
+(OPENVPN – simplest & exam-friendly)
+
+---
+
+## 🖥 MACHINE-1: **LINUX (Debian/Ubuntu) – VPN SERVER**
+
+### Step 1: OpenVPN install
+
+```bash
+sudo apt update
+sudo apt install openvpn easy-rsa -y
+```
+
+---
+
+### Step 2: Easy-RSA setup
+
+```bash
+make-cadir ~/openvpn-ca
+cd ~/openvpn-ca
+```
+
+---
+
+### Step 3: Certificate variables set
+
+```bash
+nano vars
+```
+
+Find & change:
+
+```bash
+set_var EASYRSA_REQ_COUNTRY    "IN"
+set_var EASYRSA_REQ_PROVINCE   "MH"
+set_var EASYRSA_REQ_CITY       "PUNE"
+set_var EASYRSA_REQ_ORG        "CDAC"
+set_var EASYRSA_REQ_EMAIL      "admin@vpn.com"
+set_var EASYRSA_REQ_OU         "IT"
+```
+
+Save → Exit
+
+---
+
+### Step 4: Build certificates
+
+```bash
+./easyrsa init-pki
+./easyrsa build-ca
+./easyrsa gen-dh
+./easyrsa build-server-full server nopass
+./easyrsa build-client-full client1 nopass
+```
+
+---
+
+### Step 5: Copy keys
+
+```bash
+sudo cp pki/ca.crt pki/issued/server.crt pki/private/server.key pki/dh.pem /etc/openvpn/
+```
+
+---
+
+### Step 6: OpenVPN server config
+
+```bash
+sudo nano /etc/openvpn/server.conf
+```
+
+Paste **FULL FILE**:
+
+```conf
+port 1194
+proto udp
+dev tun
+
+ca ca.crt
+cert server.crt
+key server.key
+dh dh.pem
+
+server 10.8.0.0 255.255.255.0
+keepalive 10 120
+
+persist-key
+persist-tun
+
+status openvpn-status.log
+verb 3
+```
+
+Save → Exit
+
+---
+
+### Step 7: IP forwarding enable
+
+```bash
+sudo nano /etc/sysctl.conf
+```
+
+Uncomment:
+
+```conf
+net.ipv4.ip_forward=1
+```
+
+Apply:
+
+```bash
+sudo sysctl -p
+```
+
+---
+
+### Step 8: Start OpenVPN
+
+```bash
+sudo systemctl start openvpn@server
+sudo systemctl enable openvpn@server
+```
+
+✔ Linux VPN Server READY
+
+---
+
+## 🖥 MACHINE-2: **WINDOWS – VPN CLIENT**
+
+### Step 1: Download OpenVPN
+
+👉 [https://openvpn.net/community-downloads/](https://openvpn.net/community-downloads/)
+
+Install → Next → Finish
+
+---
+
+### Step 2: Client config file
+
+Create file:
+
+```
+client1.ovpn
+```
+
+Paste:
+
+```conf
+client
+dev tun
+proto udp
+remote <LINUX_SERVER_IP> 1194
+
+ca ca.crt
+cert client1.crt
+key client1.key
+
+persist-key
+persist-tun
+verb 3
+```
+
+---
+
+### Step 3: Copy certificates
+
+From Linux:
+
+```bash
+cd ~/openvpn-ca
+```
+
+Copy these to Windows:
+
+* `ca.crt`
+* `client1.crt`
+* `client1.key`
+* `client1.ovpn`
+
+Put all in:
+
+```
+C:\Program Files\OpenVPN\config\
+```
+
+---
+
+### Step 4: Connect VPN
+
+* Right-click OpenVPN icon
+* Click **Connect**
+
+---
+
+### Step 5: Test VPN
+
+Windows CMD:
+
+```cmd
+ping 10.8.0.1
+```
+
+✅ Reply = VPN WORKING 🎉
+
+---
+
+# 🔐 OPTION-2: **VPN (WINDOWS → WINDOWS)**
+
+👉 **Very easy using SoftEther VPN**
+
+---
+
+## 🖥 MACHINE-1: Windows VPN Server
+
+1. Download:
+   👉 [https://www.softether.org/](https://www.softether.org/)
+
+2. Install **SoftEther VPN Server**
+
+3. Set:
+
+   * Admin password
+   * Create Virtual Hub
+   * Enable L2TP/IPsec
+   * Set username/password
+
+---
+
+## 🖥 MACHINE-2: Windows VPN Client
+
+1. Control Panel → Network
+2. Create new VPN connection
+3. Server IP = VPN Server IP
+4. Username / Password
+5. Connect
+
+---
+
+### Test:
+
+```cmd
+ipconfig
+ping <VPN_Server_IP>
+```
+
+---
+
+# 🧠 EXAM ME LIKHNE KE LIYE (2 line)
+
+> VPN creates a secure encrypted tunnel between two machines using OpenVPN / L2TP.
+
+---
