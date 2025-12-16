@@ -1,0 +1,305 @@
+Theek hai bhai 🙂
+ab **bilkul ZERO level se, spoon-feeding 🥄 style** me
+**BASIC VPN PRACTICAL** de raha hoon.
+Ek-ek step, **kaha install karna hai, kaise karna hai, kya likhna hai** sab clear.
+
+Main **SABSE EASY & EXAM-FRIENDLY** setup de raha hoon:
+
+> 🔐 **OpenVPN – Linux (Server) ↔ Windows (Client)**
+
+---
+
+# 🧠 LAB TOPOLOGY (PEHLE SAMAJH LO)
+
+| Machine      | Role           |
+| ------------ | -------------- |
+| 🐧 Debian 12 | VPN **Server** |
+| 🪟 Windows   | VPN **Client** |
+
+👉 Dono same network me hone chahiye
+👉 Internet working hona chahiye
+
+---
+
+# 🟢 PART-1 : LINUX (DEBIAN) – VPN SERVER
+
+## 🔹 STEP 1: Debian VM login karo
+
+Terminal open karo
+User: `shuhari` (ya jo bhi hai)
+
+---
+
+## 🔹 STEP 2: OpenVPN install karo (SERVER PE)
+
+👉 **Ye command Debian TERMINAL me hi likhni hai**
+
+```bash
+sudo apt update
+sudo apt install openvpn easy-rsa -y
+```
+
+✔️ Agar error nahi aaya → OK
+
+---
+
+## 🔹 STEP 3: Easy-RSA folder banao
+
+```bash
+make-cadir ~/openvpn-ca
+cd ~/openvpn-ca
+```
+
+👉 Ab tum **openvpn-ca folder ke andar** ho
+
+---
+
+## 🔹 STEP 4: PKI initialize karo (certificate system)
+
+```bash
+./easyrsa init-pki
+```
+
+Output aaye:
+
+```
+init-pki complete
+```
+
+---
+
+## 🔹 STEP 5: CA (Certificate Authority) banao
+
+```bash
+./easyrsa build-ca
+```
+
+### Jab puche:
+
+```
+Enter New CA Key Passphrase:
+```
+
+👉 simple password daal do (example: `1234`)
+
+```
+Common Name:
+```
+
+👉 likho:
+
+```
+VPN-CA
+```
+
+✔️ CA ban gaya
+
+---
+
+## 🔹 STEP 6: Server certificate banao
+
+```bash
+./easyrsa build-server-full server nopass
+```
+
+✔️ Server cert ready
+
+---
+
+## 🔹 STEP 7: Client certificate banao
+
+```bash
+./easyrsa build-client-full client1 nopass
+```
+
+✔️ Client cert ready
+
+---
+
+## 🔹 STEP 8: Encryption key banao
+
+```bash
+openvpn --genkey --secret ta.key
+```
+
+---
+
+## 🔹 STEP 9: OpenVPN server config file banao
+
+```bash
+sudo nano /etc/openvpn/server.conf
+```
+
+### Ye **POORA paste karo** 👇
+
+```conf
+port 1194
+proto udp
+dev tun
+
+ca ca.crt
+cert server.crt
+key server.key
+dh dh.pem
+tls-auth ta.key 0
+
+server 10.8.0.0 255.255.255.0
+keepalive 10 120
+
+persist-key
+persist-tun
+
+status openvpn-status.log
+verb 3
+```
+
+Save → `CTRL+O` → Enter
+Exit → `CTRL+X`
+
+---
+
+## 🔹 STEP 10: Certificates copy karo OpenVPN folder me
+
+```bash
+sudo cp pki/ca.crt pki/issued/server.crt pki/private/server.key pki/dh.pem ta.key /etc/openvpn/
+```
+
+---
+
+## 🔹 STEP 11: IP Forwarding ON karo
+
+```bash
+sudo nano /etc/sysctl.conf
+```
+
+Is line ko uncomment karo:
+
+```conf
+net.ipv4.ip_forward=1
+```
+
+Apply:
+
+```bash
+sudo sysctl -p
+```
+
+---
+
+## 🔹 STEP 12: OpenVPN start karo
+
+```bash
+sudo systemctl start openvpn@server
+sudo systemctl enable openvpn@server
+```
+
+Check:
+
+```bash
+sudo systemctl status openvpn@server
+```
+
+🟢 **Active (running)** dikhna chahiye
+
+---
+
+# 🟢 PART-2 : WINDOWS – VPN CLIENT
+
+## 🔹 STEP 13: Windows me OpenVPN install karo
+
+👉 Browser me open karo:
+
+```
+https://openvpn.net/community-downloads/
+```
+
+✔️ Download → Install → Next → Finish
+
+---
+
+## 🔹 STEP 14: Client config file banao (Windows)
+
+### Desktop pe:
+
+Right click → New → Text file
+Naam rakho:
+
+```
+client1.ovpn
+```
+
+### Isme paste karo 👇
+
+```conf
+client
+dev tun
+proto udp
+remote <DEBIAN_IP> 1194
+
+ca ca.crt
+cert client1.crt
+key client1.key
+tls-auth ta.key 1
+
+persist-key
+persist-tun
+verb 3
+```
+
+👉 `<DEBIAN_IP>` = Debian ka IP
+(Check: `ip a`)
+
+---
+
+## 🔹 STEP 15: Certificates Windows me copy karo
+
+### Debian terminal me:
+
+```bash
+mkdir ~/client-files
+cp pki/ca.crt pki/issued/client1.crt pki/private/client1.key ta.key ~/client-files/
+```
+
+👉 Ye files **Windows ke OpenVPN config folder** me daalni hai:
+
+```
+C:\Program Files\OpenVPN\config\
+```
+
+✔️ `client1.ovpn` bhi yahi rakho
+
+---
+
+## 🔹 STEP 16: VPN connect karo (Windows)
+
+* System tray me OpenVPN icon
+* Right click → **Connect**
+* Status: **Connected**
+
+🎉 VPN CONNECTED
+
+---
+
+# 🔹 STEP 17: TEST (VERY IMPORTANT)
+
+### Windows CMD:
+
+```cmd
+ping 10.8.0.1
+```
+
+### Debian terminal:
+
+```bash
+ping 10.8.0.2
+```
+
+✔️ Reply aaye → VPN SUCCESS ✅
+
+---
+
+# 🧠 EXAM / VIVA ME 2 LINE
+
+> OpenVPN was configured using PKI certificates to establish a secure tunnel between Linux server and Windows client.
+
+---
