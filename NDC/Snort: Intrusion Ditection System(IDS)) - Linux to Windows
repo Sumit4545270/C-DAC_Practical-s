@@ -1,0 +1,167 @@
+## ✅ What I *can* do immediately for you (no tool needed)
+
+Below is the **FULL SNORT IDS BASIC PRACTICAL** in **super-basic, spoon-feeding 🥄 style**, exactly the **same content** that will go into the PDF.
+When you say **“generate PDF now”**, I will convert **this exact content** into **one clean PDF file**.
+
+---
+
+# 🛡️ SNORT INTRUSION DETECTION SYSTEM
+
+## BASIC PRACTICAL (Debian 12 + Windows)
+
+---
+
+## 🎯 AIM
+
+To install and configure **Snort IDS** and detect a **PING (ICMP) attack**.
+
+---
+
+## 🖥️ MACHINES USED
+
+1. **Debian 12** – Snort Server
+2. **Windows** – Attacker (Ping)
+
+---
+
+## 🔹 STEP 1: Update Debian
+
+```bash
+sudo apt update
+```
+
+---
+
+## 🔹 STEP 2: Install Snort
+
+```bash
+sudo apt install snort -y
+```
+
+👉 During install, when it asks:
+
+```
+Network interface:
+```
+
+Type:
+
+```
+eth0
+```
+
+(or `ens33` → check with `ip a`)
+
+---
+
+## 🔹 STEP 3: Check Snort Version
+
+```bash
+snort -V
+```
+
+✔️ Output means Snort installed successfully
+
+---
+
+## 🔹 STEP 4: Edit Snort Configuration
+
+```bash
+sudo nano /etc/snort/snort.conf
+```
+
+Find:
+
+```conf
+ipvar HOME_NET any
+```
+
+Replace with:
+
+```conf
+ipvar HOME_NET 192.168.1.0/24
+```
+
+Save → `CTRL+O` → Enter → `CTRL+X`
+
+---
+
+## 🔹 STEP 5: Create Snort Rule (PING Detect)
+
+```bash
+sudo nano /etc/snort/rules/local.rules
+```
+
+Paste:
+
+```conf
+alert icmp any any -> $HOME_NET any (msg:"ICMP PING DETECTED"; sid:1000001; rev:1;)
+```
+
+Save & Exit
+
+---
+
+## 🔹 STEP 6: Test Snort Configuration
+
+```bash
+sudo snort -T -c /etc/snort/snort.conf
+```
+
+✔️ Expected:
+
+```
+Snort successfully validated the configuration!
+```
+
+---
+
+## 🔹 STEP 7: Run Snort (IDS Mode)
+
+```bash
+sudo snort -A console -q -c /etc/snort/snort.conf -i eth0
+```
+
+➡️ Snort is now listening
+
+---
+
+## 🔹 STEP 8: Attack from Windows
+
+On **Windows CMD**:
+
+```cmd
+ping <Debian_IP>
+```
+
+Example:
+
+```cmd
+ping 192.168.1.10
+```
+
+---
+
+## 🔹 STEP 9: Alert Output
+
+On Debian terminal:
+
+```
+[**] ICMP PING DETECTED [**]
+```
+
+🎉 **Attack detected successfully**
+
+---
+
+## 📌 CONCLUSION
+
+Snort IDS successfully detected ICMP traffic using rule-based intrusion detection.
+
+---
+
+## 🧠 EXAM / VIVA LINE
+
+> Snort is an open-source Intrusion Detection System used to monitor network traffic and generate alerts based on predefined rules.
+
+---
