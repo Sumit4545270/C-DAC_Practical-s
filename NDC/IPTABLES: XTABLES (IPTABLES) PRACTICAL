@@ -1,0 +1,159 @@
+It seems like I can’t do more advanced data analysis right now. Please try again later.
+---
+
+But **don’t worry bhai**, I’ll still help you properly 😊
+Right now I **cannot generate/download a PDF file** due to tool limits, but below is a **complete, exam-ready “solution file content”** for **XTABLES (IPTABLES) practical**.
+
+👉 You can **directly copy–paste this into Word / LibreOffice / Google Docs** and **save as PDF**.
+This is **CDAC / lab / viva friendly**, step-by-step, super basic.
+
+---
+
+# 🔐 XTABLES (IPTABLES) PRACTICAL
+
+## Debian 12 & Windows – Step by Step
+
+---
+
+## 🎯 AIM
+
+To configure basic firewall rules using **xtables (iptables)** on **Debian 12** and test the rules from a **Windows machine**.
+
+---
+
+## 🖥️ SYSTEM REQUIREMENTS
+
+* **Machine 1:** Debian 12 (Firewall Server)
+* **Machine 2:** Windows (Client / Attacker)
+* Network connectivity between both machines
+
+---
+
+## 🔹 STEP 1: Check iptables availability (Debian)
+
+```bash
+sudo iptables --version
+```
+
+✅ Confirms xtables/iptables is installed.
+
+---
+
+## 🔹 STEP 2: Check current firewall rules
+
+```bash
+sudo iptables -L -n -v
+```
+
+👉 Displays existing rules (if any).
+
+---
+
+## 🔹 STEP 3: Flush existing rules (Clean start)
+
+```bash
+sudo iptables -F
+```
+
+👉 Removes all existing rules.
+
+---
+
+## 🔹 STEP 4: Allow loopback traffic
+
+```bash
+sudo iptables -A INPUT -i lo -j ACCEPT
+```
+
+👉 Allows internal system communication.
+
+---
+
+## 🔹 STEP 5: Allow SSH access (IMPORTANT)
+
+```bash
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+```
+
+👉 Prevents SSH lockout.
+
+---
+
+## 🔹 STEP 6: Block ICMP (Ping)
+
+```bash
+sudo iptables -A INPUT -p icmp -j DROP
+```
+
+👉 Blocks ping requests.
+
+---
+
+## 🔹 STEP 7: Set default INPUT policy to DROP
+
+```bash
+sudo iptables -P INPUT DROP
+```
+
+👉 Drops all traffic except allowed rules.
+
+---
+
+## 🔹 STEP 8: Testing from Windows
+
+### On Windows Command Prompt:
+
+```cmd
+ping <Debian_IP>
+```
+
+✅ Expected Result:
+
+```
+Request timed out
+```
+
+👉 Ping is blocked successfully.
+
+---
+
+## 🔹 STEP 9: Verify rules on Debian
+
+```bash
+sudo iptables -L -n
+```
+
+👉 Confirms rules are active.
+
+---
+
+## 🔹 STEP 10 (Optional): Allow ICMP again
+
+```bash
+sudo iptables -D INPUT -p icmp -j DROP
+```
+
+👉 Restores ping access.
+
+---
+
+## ✅ RESULT
+
+Firewall rules using **xtables (iptables)** were successfully configured on **Debian 12** and verified from a **Windows machine**.
+
+---
+
+## 🧠 VIVA / EXAM POINTS
+
+* xtables is the framework used by iptables
+* iptables works on **netfilter**
+* Default chains: INPUT, OUTPUT, FORWARD
+* Rules are processed **top to bottom**
+
+---
+
+## 📌 CONCLUSION
+
+This practical demonstrates basic firewall implementation using xtables (iptables) to control network traffic effectively.
+
+---
