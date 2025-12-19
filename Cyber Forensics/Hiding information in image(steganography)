@@ -1,0 +1,111 @@
+The command you mentioned is:
+
+```
+copy /b filename + textfile
+```
+
+This **comes from Windows command-line (CMD)** and is used in **cyber forensics/steganography labs** in CDAC-DITISS to hide data inside another file.
+
+---
+
+# ✅ **Meaning in Simple Words**
+
+👉 This command **merges two files** in **binary mode** and produces a single output file.
+
+* `filename` = original file (image, video, exe, pdf, etc.)
+* `textfile` = hidden data (txt or any other file)
+
+So after running the command:
+📌 The **text file gets appended into the original file**
+📌 But the file still **opens normally**
+📌 The hidden data remains secretly inside the file
+
+---
+
+# 🔍 **Why “/b” ?**
+
+`/b` = Binary mode
+✔ Tells Windows to join files exactly as they are, without converting characters.
+
+---
+
+# 📌 **Example**
+
+If you do:
+
+```
+copy /b img.jpg + secret.txt output.jpg
+```
+
+Result:
+
+* `output.jpg` looks like a normal image
+* But `secret.txt` is embedded inside
+
+You can later extract data using:
+
+```
+notepad output.jpg
+```
+
+(or forensic hex tools)
+
+---
+
+# 🎯 **Why this is taught in Cyber Forensics?**
+
+Because attackers use this trick to:
+✔ hide data inside images
+✔ hide malware code
+✔ exfiltrate information without detection
+
+And forensic investigators must:
+✔ detect such hidden data
+✔ recover it as evidence
+
+---
+
+# 💡 **Where is this used in DITISS Labs?**
+
+This matches practicals under:
+📘 **Steganography, File Merging, Data Hiding, Anti-Forensics**
+
+---
+
+# 🧠 **Small Demonstration**
+
+1️⃣ Open CMD where files are stored
+2️⃣ Run:
+
+```
+copy /b pic.jpg + info.txt final.jpg
+```
+
+3️⃣ Now:
+
+* `final.jpg` opens like a normal picture
+* `info.txt` is hidden inside
+
+4️⃣ To verify:
+
+```
+type final.jpg
+```
+
+Scroll bottom → text appears
+
+---
+
+# 🔐 **Key Concept**
+
+✔ File format headers tell OS how to open file
+✔ Extra binary data at the end does not break the file
+✔ So hidden data survives
+
+---
+
+# 📘 **One-Line Definition for Exam**
+
+👉 *“The command `copy /b filename + textfile` appends one file into another in binary format, allowing hidden data embedding without altering visible functionality — a common method used in cyber forensics to demonstrate data concealment and steganography.”*
+
+---
