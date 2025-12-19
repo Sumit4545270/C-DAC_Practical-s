@@ -1,0 +1,161 @@
+Thik hai bhai — niche **zeroization ka practical** super clean, neatly arranged aur sirf useful commands ke saath de raha hoon. Ye **Kali Linux** par hard disk wipe + recovery fail check practical ke liye perfect hoga.
+
+---
+
+# ✅ **📌 ZERONIZATION PRACTICAL (Short + Clear Steps)**
+
+### 👉 **Goal:**
+
+Hard disk ko zero overwrite karke data remove karna, phir recovery try karke prove karna ke data recover nahi hota.
+
+---
+
+## **✨ STEP-1: Identify External Disk**
+
+```bash
+lsblk
+```
+
+📌 Isse pata chalega external disk ka name kya hai
+Example → `/dev/sdb`
+
+---
+
+## **✨ STEP-2: Zeroization (Complete Disk Wipe)**
+
+```bash
+sudo dd if=/dev/zero of=/dev/sdb bs=4M status=progress
+```
+
+📌 Ye pura disk zeros se overwrite karega
+📌 Isme time lag sakta hai (disk size par depend karta hai)
+
+⚠️ **Sahi disk name use karna — galat hua toh system wipe ho jayega**
+
+---
+
+## **✨ STEP-3: Verify Disk is Zero**
+
+```bash
+sudo xxd /dev/sdb | head
+```
+
+📌 Output mostly `00 00 00 ...` hoga
+📌 Ye proof hai ke disk empty & zeroized hai
+
+---
+
+## **✨ STEP-4: Partition Create (gdisk)**
+
+```bash
+sudo gdisk /dev/sdb
+```
+
+Inside gdisk:
+
+```
+o   (create new GPT table)
+y
+n   (new partition)
+enter
+enter
+enter
+w   (write)
+y
+```
+
+Done → exit
+
+---
+
+## **✨ STEP-5: Format Partition to EXT4**
+
+```bash
+sudo mkfs.ext4 /dev/sdb1
+```
+
+---
+
+## **✨ STEP-6: Mount Partition**
+
+```bash
+sudo mkdir /mnt/data
+sudo mount /dev/sdb1 /mnt/data
+```
+
+---
+
+## **✨ STEP-7: Create Test File (optional check)**
+
+```bash
+sudo cp /usr/share/pixmaps/debian-logo.png /mnt/data/test.png
+ls /mnt/data
+```
+
+---
+
+## **✨ STEP-8: Delete File**
+
+```bash
+sudo rm /mnt/data/test.png
+ls /mnt/data
+```
+
+---
+
+## **✨ STEP-9: Install Foremost Tool**
+
+```bash
+sudo apt install foremost -y
+```
+
+---
+
+## **✨ STEP-10: Recovery Folder Create**
+
+```bash
+sudo mkdir /home/recovery
+sudo chmod 777 /home/recovery
+```
+
+---
+
+## **✨ STEP-11: File Recovery Attempt**
+
+```bash
+sudo foremost -i /dev/sdb1 -t all -o /home/recovery -v
+```
+
+---
+
+## **✨ STEP-12: Check Recovery Result**
+
+```bash
+cd /home/recovery
+ls
+```
+
+📌 Mostly **recovery folder empty hoga**
+📌 Proof: **Zeroization success**
+
+---
+
+# 🎯 FINAL RESULT
+
+| Stage                   | Output            |
+| ----------------------- | ----------------- |
+| Disk wiped              | Yes               |
+| File deleted            | Yes               |
+| Recovery attempt        | Failed (expected) |
+| Proof of zero overwrite | Yes               |
+
+---
+
+# ⭐ WHY THIS PRACTICAL MATTERS
+
+✔ Secure disk wipe
+✔ No leftover data
+✔ Forensics fail proof
+✔ Industry grade technique
+
+---
