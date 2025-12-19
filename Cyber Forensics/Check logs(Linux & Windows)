@@ -1,0 +1,159 @@
+Bhai yeh **short & clear answer** hai 👇🙂
+
+# ✅ **How to Check Logs in Linux & Windows**
+
+---
+
+# 🐧 **LINUX – LOGS CHECK KARNE KA SIMPLE TARIQA**
+
+📌 **1️⃣ Default log location:**
+
+```
+/var/log/
+```
+
+📌 **2️⃣ System log check:**
+
+```
+sudo cat /var/log/syslog
+```
+
+📌 **3️⃣ Kernel log check:**
+
+```
+sudo dmesg
+```
+
+📌 **4️⃣ SSH authentication log check:**
+
+```
+sudo cat /var/log/auth.log
+```
+
+📌 **5️⃣ Login history check:**
+
+```
+last
+```
+
+📌 **6️⃣ Failed login attempts:**
+
+```
+lastb
+```
+
+📌 **7️⃣ Live log monitoring (real-time):**
+
+```
+sudo tail -f /var/log/syslog
+```
+
+📌 **8️⃣ Journal logs (new method):**
+
+```
+journalctl -xe
+```
+
+📌 **9️⃣ Service logs:**
+
+```
+journalctl -u ssh
+```
+
+📌 **10️⃣ Find specific log text:**
+
+```
+grep "error" /var/log/syslog
+```
+
+🔥 **Most useful Linux logs:**
+
+| Log file          | Purpose               |
+| ----------------- | --------------------- |
+| /var/log/syslog   | Full system activity  |
+| /var/log/auth.log | Login + password logs |
+| /var/log/kern.log | Kernel events         |
+| /var/log/dpkg.log | Software installation |
+
+---
+
+# 🪟 **WINDOWS – LOGS CHECK KARNE KA SIMPLE TARIQA**
+
+📌 **1️⃣ Event Viewer open karo:**
+
+```
+Windows + R
+eventvwr.msc
+```
+
+📌 **2️⃣ Logs categories:**
+
+| Category         | Meaning                 |
+| ---------------- | ----------------------- |
+| Application Logs | Software-related events |
+| Security Logs    | Login & permission logs |
+| System Logs      | OS & hardware logs      |
+
+📌 **3️⃣ Check system logs:**
+Event Viewer →
+
+```
+Windows Logs → System
+```
+
+📌 **4️⃣ Check security (login failure/success):**
+Event Viewer →
+
+```
+Windows Logs → Security
+```
+
+📌 **5️⃣ Check application logs:**
+Event Viewer →
+
+```
+Windows Logs → Application
+```
+
+📌 **6️⃣ Filter errors only:**
+Right click → Filter Current Log → Level = Error / Critical
+
+📌 **7️⃣ Command line log check:**
+
+```
+wevtutil qe System
+```
+
+📌 **8️⃣ Check login failures:**
+Security Log → Event ID:
+
+```
+4625  (Failed login)
+4624  (Successful login)
+```
+
+---
+
+# ⭐ QUICK SUMMARY
+
+## ✔ Linux Logs
+
+```
+/var/log/
+cat /var/log/syslog
+cat /var/log/auth.log
+journalctl -xe
+tail -f /var/log/syslog
+```
+
+## ✔ Windows Logs
+
+```
+eventvwr.msc
+System Logs
+Security Logs
+Application Logs
+wevtutil qe System
+```
+
+---
